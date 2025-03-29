@@ -62,8 +62,8 @@ namespace Bussiness_Layer.Services.EmployeeService
                 Gender=employee.Gender.ToString(),
                 EmployeeType=employee.EmployeeType.ToString(),
                 IsActive=employee.IsActive,
-                Department=employee.Department.Name //Use Eager Loading
-                
+                Department = employee.Department.Name //Use Eager Loading
+
 
             });
         }
@@ -91,7 +91,7 @@ namespace Bussiness_Layer.Services.EmployeeService
                     LastModifiedBy = employee.LastModifiedBy,
                     LastModifiedOn = employee.LastModifiedOn,
                     IsDeleted = employee.IsDeleted,
-                    Department = employee.Department.Name //Once Access Nev Property [Lazy Loading ]
+                    Department = employee.Department?.Name //Once Access Nev Property [Lazy Loading ]
 
                 };
                
@@ -118,7 +118,7 @@ namespace Bussiness_Layer.Services.EmployeeService
                 LastModifiedBy = 1,
                 CreatedOn = DateTime.UtcNow,
                 LastModifiedOn = DateTime.UtcNow,
-                DepartmentId = EmployeeDto.DepartmentID
+                      
 
 
             };

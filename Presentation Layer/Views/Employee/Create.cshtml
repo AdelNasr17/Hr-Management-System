@@ -1,9 +1,8 @@
-﻿
-
-@model CreatedEmployeeDto
+﻿@model CreatedEmployeeDto
 @inject IDepartmentService departmentService
 @{
     ViewData["Title"] = "Create";
+    ViewBag.Action = "Create";
     var Departments = new SelectList(departmentService.GetAllDepartments(),
     nameof(DepartmentToReturnDto.Id), nameof(DepartmentToReturnDto.Name));
 }
@@ -77,7 +76,7 @@
                 <option value="@null">Select Department</option>
               
             </select>
-            <span asp-validation-for="Salary" class="text-danger"></span>
+       
         </div>
         <div class="form-group mb-3">
             <input asp-for="IsActive" class="form-check-input" />

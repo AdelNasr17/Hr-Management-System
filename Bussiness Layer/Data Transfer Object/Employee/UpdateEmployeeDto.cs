@@ -35,7 +35,7 @@ namespace Bussiness_Layer.Data_Transfer_Object.Employee
 
         public Gender Gender { get; set; }
         public EmployeeType EmployeeType { get; set; }
-        public int DepartmentID { get; set; }
+        public string? Department { get; set; }
 
     }
 }

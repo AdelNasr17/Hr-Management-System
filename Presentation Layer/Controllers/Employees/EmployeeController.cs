@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 
+
 namespace Presentation_Layer.Controllers.Employees
 {
     [Route("Employees/[controller]/ [action]")]
@@ -49,21 +50,22 @@ namespace Presentation_Layer.Controllers.Employees
 
         [HttpPost]
         [ValidateAntiForgeryToken]//Action Filter
-        public IActionResult Create(CreatedEmployeeDto employeeDto)
+        public IActionResult Create(CreatedEmployeeDto employeeVM)
         {
             if (!ModelState.IsValid)
-                return View(employeeDto);
+                return View(employeeVM);
             var message = string.Empty;
             try
             {
-                var Result = _employeeServices.AddEmployee(employeeDto);
+                var Result = _employeeServices.AddEmployee(employeeVM);
+   
                 if (Result > 0)
                     return RedirectToAction(nameof(Index));
                 else
                 {
                     message = "Employee Can Not be Created";
                     ModelState.AddModelError(string.Empty, message);
-                    return View(employeeDto);
+                    return View(employeeVM);
                 }
 
             }
@@ -73,7 +75,7 @@ namespace Presentation_Layer.Controllers.Employees
                 if (_env.IsDevelopment())
                 {
                     message = ex.Message;
-                    return View(employeeDto);
+                    return View(employeeVM);
                 }
                 else
                 {
@@ -85,6 +87,7 @@ namespace Presentation_Layer.Controllers.Employees
         }
 
         #endregion
+
 
         #region Detalis Action
         [HttpGet]
@@ -104,20 +107,17 @@ namespace Presentation_Layer.Controllers.Employees
         [HttpGet]
         public IActionResult Edit(int? id)
         {
-
-            if (id == null)
-                return BadRequest();
-
+            if (id == null || id <= 0)
+                return BadRequest("Invalid employee ID.");
 
             var employee = _employeeServices.GetEmployeeById(id.Value);
             if (employee == null)
-                return NotFound();
-
+                return NotFound("Employee not found.");
 
             var updateEmployeeDto = new UpdateEmployeeDto
             {
-                EmployeeType = Enum.TryParse<EmployeeType>(employee.EmployeeType, out var empType) ? empType : default,
-                Gender = Enum.TryParse<Gender>(employee.Gender, out var gender) ? gender : default,
+                EmployeeType = Enum.TryParse(employee.EmployeeType, out EmployeeType empType) ? empType : default, 
+                Gender = Enum.TryParse(employee.Gender, out Gender gender) ? gender : default,
                 Age = employee.Age,
                 Email = employee.Email,
                 IsActive = employee.IsActive,
@@ -132,35 +132,30 @@ namespace Presentation_Layer.Controllers.Employees
             return View(updateEmployeeDto);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]//Action Filter
 
+        [HttpPost]
+        [ValidateAntiForgeryToken] // Action Filter
         public IActionResult Edit(int id, UpdateEmployeeDto employeeDto)
         {
-
             if (!ModelState.IsValid)
                 return View(employeeDto);
 
             try
             {
-
                 var result = _employeeServices.UpdateEmployee(employeeDto);
                 if (result > 0)
                     return RedirectToAction(nameof(Index));
 
-
-                ModelState.AddModelError(string.Empty, "Employee cannot be updated.");
+                ModelState.AddModelError(string.Empty, "Employee cannot be updated. Please check the details and try again.");
             }
             catch (Exception ex)
             {
-
-                var message = _env.IsDevelopment() ? ex.Message : "Employee cannot be updated.";
+                var message = _env.IsDevelopment() ? ex.Message : "An error occurred while updating the employee.";
                 ModelState.AddModelError(string.Empty, message);
             }
 
             return View(employeeDto);
         }
-
         #endregion
 
         #region Delete Action
