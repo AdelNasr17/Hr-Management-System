@@ -1,95 +1,84 @@
 ﻿
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using DataAccess.UnitOfWork;
+
 namespace Bussiness_Layer.Services.DepartmentService
 {
     public class DepartmentService : IDepartmentService
     {
-        private readonly IDepartmentRepository _departmentRepository;
-        public DepartmentService(IDepartmentRepository departmentRepository) // 1.Injection
+        //private readonly IDepartmentRepository _departmentRepository;
+        private readonly IUnitOfWork _unitOfWork;
+
+        private readonly IMapper _mapper;
+
+        //public DepartmentService(IDepartmentRepository departmentRepository,IMapper mapper) // 1.Injection
+        //{
+        //    _departmentRepository = departmentRepository;
+        //    _mapper = mapper;
+        //}
+
+        public DepartmentService(IUnitOfWork unitOfWork, IMapper mapper) // 1.Injection
         {
-            _departmentRepository = departmentRepository;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public int AddDepartment(CreatedDepartmentDto departmentDto)
         {
-            var depapartment = new Department
-            {
-                Code = departmentDto.Code,
-                Name = departmentDto.Name,
-                Description = departmentDto.Description,
-                CreatedBy = 1,
-                CreatedOn = departmentDto.CreationDate,
-                LastModifiedBy = 1,
-                LastModifiedOn=DateTime.UtcNow,
+            //  CreateDepartmentDto --> Department 
+            var department = _mapper.Map<Department>(departmentDto);
+             _unitOfWork.departmentRepository.Add(department);
 
-            };
-            return _departmentRepository.Add(depapartment);
-
-
-
+            return _unitOfWork.Complete();
         }
 
         public bool DeleteDepartment(int id)
         {
-            var department= _departmentRepository.GetById(id);
-            if(department != null)          
-                return _departmentRepository.Remove(department) > 0;
-                            
-            return false;
+            var DepartmentRepo = _unitOfWork.departmentRepository;
+            var department= DepartmentRepo.GetById(id);
+            if(department != null)
+                DepartmentRepo.Remove(department) ;               
+            return  _unitOfWork.Complete()>0;
         }
 
         public IEnumerable<DepartmentToReturnDto> GetAllDepartments()
         {
-            var departments = _departmentRepository.GetAllQueryable().Where(D => D.IsDeleted == false).Select(department => new DepartmentToReturnDto
-            {
-                Id = department.Id,
-                Name = department.Name,
-                Description = department.Description,
-                Code = department.Code,
-                CreatedOn = DateOnly.FromDateTime(department.CreatedOn),
-            }).AsNoTracking().ToList();
+
+            var departments = _unitOfWork.departmentRepository.GetAllQueryable().Where(D => D.IsDeleted == false)
+                .ProjectTo<DepartmentToReturnDto>(_mapper.ConfigurationProvider);
+            //    .Select(department => new DepartmentToReturnDto
+            //{
+            //    Id = department.Id,
+            //    Name = department.Name,
+            //    Description = department.Description,
+            //    Code = department.Code,
+            //    CreatedOn = department.CreatedOn,
+            //}).AsNoTracking().ToList();
 
             return departments;
         }
 
         public DepartmentDetailsToReturnDto? GetDepartmentById(int id)
         {
-            var department = _departmentRepository.GetById(id);
+            var department = _unitOfWork.departmentRepository.GetById(id);
             if(department is not null)
             {
-
-                return new DepartmentDetailsToReturnDto
-                {
-                    Id = department.Id,
-                    Name = department.Name,
-                    Description = department.Description,
-                    Code = department.Code,
-                    CreatedBy = department.CreatedBy,
-                    CreatedOn = department.CreatedOn,
-                    LastModifiedBy = department.LastModifiedBy,
-                    LastModifiedOn = department.LastModifiedOn,
-                    IsDeleted = department.IsDeleted,
-                    
-                };
+                // Department ==> DepartmentDetailsToReturnDto
+                var departments = _mapper.Map<DepartmentDetailsToReturnDto>(department);
+                return departments;
+               
             }
             return null;
         }
 
         public int UpdateDepartment(UpdateDepartmentDto departmentDto)
         {
-            var depapartment = new Department
-            {
-                Id = departmentDto.Id,
-                Code = departmentDto.Code,
-                Name = departmentDto.Name,
-                Description = departmentDto.Description,
-                CreatedBy = 1,
-                CreatedOn = departmentDto.CreationDate,
-                LastModifiedBy = 1,
-                LastModifiedOn = DateTime.UtcNow,
+            //UpdateDepartmentDto ==> Department
+            var depapartment = _mapper.Map<Department>(departmentDto);
 
-            };
-            return _departmentRepository.Update(depapartment);
-
+             _unitOfWork.departmentRepository.Update(depapartment);
+            return _unitOfWork.Complete();
 
 
         }

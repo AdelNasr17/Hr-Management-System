@@ -1,9 +1,13 @@
 using Bussiness_Layer.Services.DepartmentService;
 using Bussiness_Layer.Services.EmployeeService;
 using DataAccess.Data.DbContexts;
+using Bussiness_Layer.Comman.Services.AttachmentServices;
 using DataAccess.Repositories.DepartmentRepository;
 using DataAccess.Repositories.EmployeeRepository;
+using DataAccess.UnitOfWork;
+using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using Presentation_Layer.Mapping;
 
 namespace Presentation_Layer
 {
@@ -25,13 +29,25 @@ namespace Presentation_Layer
             });
 
             // Repositories
-            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            //builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            //builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
 
             //Services
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
+            //IUnitOfWork
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
+            // Auto Mapper
+            builder.Services.AddAutoMapper(M => M.AddProfile(new Presentation_Layer.Mapping.MappingProfile()));
+            builder.Services.AddAutoMapper(M => M.AddProfile(new Bussiness_Layer.Mapping.MappingProfile()));
+
+
+            //Images
+            builder.Services.AddTransient<IAttachmentService, AttachmentService>();
             #endregion
 
             var app = builder.Build();

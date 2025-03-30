@@ -1,4 +1,5 @@
-﻿using Bussiness_Layer.Data_Transfer_Object.Department;
+﻿using AutoMapper;
+using Bussiness_Layer.Data_Transfer_Object.Department;
 using Bussiness_Layer.Services.DepartmentService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
@@ -11,12 +12,14 @@ namespace Presentation_Layer.Controllers.Departments
         #region Services
 
         private readonly IDepartmentService _departmentServices;
+        private readonly IMapper _mapper;
         private readonly ILogger _logger;
         private readonly IWebHostEnvironment _env;
 
-        public DepartmentController(IDepartmentService departmentService, ILogger<DepartmentController> logger, IWebHostEnvironment env)
+        public DepartmentController(IDepartmentService departmentService,IMapper mapper, ILogger<DepartmentController> logger, IWebHostEnvironment env)
         {
             _departmentServices = departmentService;
+            _mapper = mapper;
             _logger = logger;
             _env = env;
         }
@@ -60,14 +63,10 @@ namespace Presentation_Layer.Controllers.Departments
             var message = string.Empty;
             try
             {
-                var Result = _departmentServices.AddDepartment(new CreatedDepartmentDto()
-                {
-                  
-                    Code = departmentVM.Code,
-                    Name = departmentVM.Name,
-                    CreationDate = departmentVM.CreationDate,
-                    Description = departmentVM.Description,
-                });
+                    ////Map DepartmentViewModel to CreatedDepartmentDto
+                    var DepartmentToCreated=_mapper.Map<DepartmentViewModel,CreatedDepartmentDto>(departmentVM);
+
+                var Result = _departmentServices.AddDepartment(DepartmentToCreated);
                 if (Result > 0)
                 {
                     TempData["Message"] = "Department Is Created";
@@ -125,14 +124,11 @@ namespace Presentation_Layer.Controllers.Departments
             var department = _departmentServices.GetDepartmentById(id.Value);
             if (department == null)
                 return NotFound();
-            var UpdateDept = new DepartmentViewModel
-            {
-                Code = department.Code,
-                Name = department.Name,
-                CreationDate = department.CreatedOn,
-                Description = department.Description,
-            };
-            return View(UpdateDept);
+            ////Map   DepartmentDetailsToReturnDto to DepartmentViewModel
+
+            var DepartmentVM = _mapper.Map<DepartmentDetailsToReturnDto, DepartmentViewModel>(department);
+           
+            return View(DepartmentVM);
         }
 
         [HttpPost]
@@ -145,14 +141,9 @@ namespace Presentation_Layer.Controllers.Departments
             var message = string.Empty;
             try
             {
-                var Result = _departmentServices.UpdateDepartment(new UpdateDepartmentDto
-                {
-                    Id = id,
-                    Code = departmendVM.Code,
-                    Name = departmendVM.Name,
-                    CreationDate = departmendVM.CreationDate,
-                    Description = departmendVM.Description,
-                });
+                var departmentToUpdate = _mapper.Map<UpdateDepartmentDto>(departmendVM);
+                departmentToUpdate.Id = id;
+                var Result = _departmentServices.UpdateDepartment(departmentToUpdate);
                 if (Result > 0)
                     return RedirectToAction(nameof(Index));
                 else

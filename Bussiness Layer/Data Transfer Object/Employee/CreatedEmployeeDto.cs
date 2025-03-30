@@ -1,6 +1,8 @@
 ﻿
 
 
+using Microsoft.AspNetCore.Http;
+
 namespace Bussiness_Layer.Data_Transfer_Object.Employee
 {
     public class CreatedEmployeeDto
@@ -36,6 +38,8 @@ namespace Bussiness_Layer.Data_Transfer_Object.Employee
         public Gender Gender { get; set; }
         public EmployeeType EmployeeType { get; set; }
         [Display(Name="Department")]
-        public int DepartmentID { get; set; }
+        public int? DepartmentID { get; set; }
+
+        public IFormFile?  ImageURL { get; set; }
     }
 }

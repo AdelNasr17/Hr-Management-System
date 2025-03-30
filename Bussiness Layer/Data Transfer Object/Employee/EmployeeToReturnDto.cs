@@ -18,6 +18,8 @@ namespace Bussiness_Layer.Data_Transfer_Object.Employee
         [Display(Name="Employee Type")]
         public string EmployeeType { get; set; } = null!;
         public string? Department { get; set; }
+        public string? ImageURL { get; set; }
+
 
 
     }

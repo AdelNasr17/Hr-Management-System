@@ -1,10 +1,13 @@
-﻿using Bussiness_Layer.Data_Transfer_Object.Employee;
+﻿using AutoMapper;
+using Bussiness_Layer.Data_Transfer_Object.Department;
+using Bussiness_Layer.Data_Transfer_Object.Employee;
 using Bussiness_Layer.Services.DepartmentService;
 using Bussiness_Layer.Services.EmployeeService;
 using DataAccess.Models.Employee;
 using DataAccess.Models.Shared.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+using Presentation_Layer.ViewModels.Employees;
 
 
 
@@ -15,13 +18,16 @@ namespace Presentation_Layer.Controllers.Employees
     {
         #region Services
         private readonly IEmployeeService _employeeServices;
+        private readonly IMapper _mapper;
+
         //private readonly IDepartmentService _departmentService;
         private readonly ILogger _logger;
         private readonly IWebHostEnvironment _env;
 
-        public EmployeeController(IEmployeeService employeeService,ILogger<EmployeeController> logger, IWebHostEnvironment env)
+        public EmployeeController(IEmployeeService employeeService,IMapper mapper,ILogger<EmployeeController> logger, IWebHostEnvironment env)
         {
             _employeeServices = employeeService;
+            _mapper = mapper;
             //_departmentService = departmentService;
             _logger = logger;
             _env = env;
@@ -30,9 +36,9 @@ namespace Presentation_Layer.Controllers.Employees
 
         #region Index Action
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string SearchValue)
         {
-            var Employees = _employeeServices.GetAllEmployees();
+            var Employees = _employeeServices.GetAllEmployees(SearchValue);
 
             return View(Employees);
         }
@@ -50,14 +56,31 @@ namespace Presentation_Layer.Controllers.Employees
 
         [HttpPost]
         [ValidateAntiForgeryToken]//Action Filter
-        public IActionResult Create(CreatedEmployeeDto employeeVM)
+        public IActionResult Create(EmployeeViewModel employeeVM)
         {
             if (!ModelState.IsValid)
                 return View(employeeVM);
             var message = string.Empty;
             try
             {
-                var Result = _employeeServices.AddEmployee(employeeVM);
+                // EmployeeViewModel => CreateEmployeeDto
+                var EmployeeCreated =_mapper.Map<CreatedEmployeeDto>(employeeVM);
+                var Result = _employeeServices.AddEmployee(EmployeeCreated);
+                //    new CreatedEmployeeDto()
+                //    {
+                    
+                //    Name=employeeVM.Name,
+                //    Salary=employeeVM.Salary,
+                //    Age=employeeVM.Age,
+                //    PhoneNumber=employeeVM.PhoneNumber,
+                //    Address=employeeVM.Address,
+                //    Email=employeeVM.Email,
+                //    IsActive=employeeVM.IsActive,
+                //    HiringDate=employeeVM.HiringDate,
+                //    Gender = Enum.TryParse(employeeVM.Gender, out Gender gender) ? gender : default,
+                //    EmployeeType = Enum.TryParse(employeeVM.EmployeeType, out EmployeeType empType) ? empType : default,
+                //    DepartmentID = employeeVM.ID,
+                //});
    
                 if (Result > 0)
                     return RedirectToAction(nameof(Index));
@@ -107,27 +130,16 @@ namespace Presentation_Layer.Controllers.Employees
         [HttpGet]
         public IActionResult Edit(int? id)
         {
-            if (id == null || id <= 0)
+            if (id == null )
                 return BadRequest("Invalid employee ID.");
 
             var employee = _employeeServices.GetEmployeeById(id.Value);
             if (employee == null)
                 return NotFound("Employee not found.");
 
-            var updateEmployeeDto = new UpdateEmployeeDto
-            {
-                EmployeeType = Enum.TryParse(employee.EmployeeType, out EmployeeType empType) ? empType : default, 
-                Gender = Enum.TryParse(employee.Gender, out Gender gender) ? gender : default,
-                Age = employee.Age,
-                Email = employee.Email,
-                IsActive = employee.IsActive,
-                Address = employee.Address,
-                Name = employee.Name,
-                PhoneNumber = employee.PhoneNumber,
-                HiringDate = employee.HiringDate,
-                Id = id.Value,
-                Salary = employee.Salary,
-            };
+
+            //EmployeeDetailsToReturnDto=> EmployeViewModel
+            var updateEmployeeDto = _mapper.Map<EmployeeViewModel>(employee);
 
             return View(updateEmployeeDto);
         }
@@ -135,14 +147,17 @@ namespace Presentation_Layer.Controllers.Employees
 
         [HttpPost]
         [ValidateAntiForgeryToken] // Action Filter
-        public IActionResult Edit(int id, UpdateEmployeeDto employeeDto)
+        public IActionResult Edit(int id, EmployeeViewModel employeeVM)
         {
             if (!ModelState.IsValid)
-                return View(employeeDto);
+                return View(employeeVM);
 
             try
             {
-                var result = _employeeServices.UpdateEmployee(employeeDto);
+                //EmployeeViewModel => UpdateEmployeeDto
+            var EmployeeToUpdate= _mapper.Map<UpdateEmployeeDto>(employeeVM);              
+                EmployeeToUpdate.Id = id;
+                var result = _employeeServices.UpdateEmployee(EmployeeToUpdate);
                 if (result > 0)
                     return RedirectToAction(nameof(Index));
 
@@ -154,8 +169,10 @@ namespace Presentation_Layer.Controllers.Employees
                 ModelState.AddModelError(string.Empty, message);
             }
 
-            return View(employeeDto);
+            return View(employeeVM);
         }
+
+
         #endregion
 
         #region Delete Action

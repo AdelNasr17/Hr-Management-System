@@ -15,6 +15,7 @@ namespace DataAccess.Models.Employee
         public DateTime HiringDate { get; set; }
         public Gender Gender { get; set; }
         public EmployeeType EmployeeType { get; set; }
+        public string? ImageURL { get; set; }//ImageNeme
      
 
         public virtual Department.Department?  Department { get; set; }
