@@ -21,7 +21,9 @@ namespace Presentation_Layer.ViewModels.Employees
         public bool IsDeleted { get; set; } // Soft Delete
         public int? DepartmentID { get; set; }
         public string? DepartmentName { get; set; }
-        public IFormFile? ImageURL { get; set; }
+        public IFormFile? Image { get; set; }
+        public string? ImageURL { get; set; }
+
 
 
     }

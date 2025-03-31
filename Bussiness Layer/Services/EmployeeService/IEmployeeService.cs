@@ -4,10 +4,10 @@ namespace Bussiness_Layer.Services.EmployeeService
 {
     public interface IEmployeeService
     {
-        public int AddEmployee(CreatedEmployeeDto departmentDto);                 
-        public IEnumerable<EmployeeToReturnDto> GetAllEmployees(string SearchValue);
-        public EmployeeDetailsToReturnDto? GetEmployeeById(int id);
-        public bool DeleteEmployee(int id);
-        public int UpdateEmployee(UpdateEmployeeDto EmployeeDto);
+        public Task< int> AddEmployeeAsync(CreatedEmployeeDto employeeDto);                 
+        public Task< IEnumerable<EmployeeToReturnDto>> GetAllEmployeesAsync(string SearchValue);
+        public Task< EmployeeDetailsToReturnDto?> GetEmployeeByIdAsync(int id);
+        public Task< bool> DeleteEmployeeAsync(int id);
+        public Task< int> UpdateEmployeeAsync(UpdateEmployeeDto EmployeeDto);
     }
 }

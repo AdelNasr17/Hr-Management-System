@@ -5,8 +5,10 @@ using Bussiness_Layer.Services.DepartmentService;
 using Bussiness_Layer.Services.EmployeeService;
 using DataAccess.Models.Employee;
 using DataAccess.Models.Shared.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+using Microsoft.VisualBasic;
 using Presentation_Layer.ViewModels.Employees;
 
 
@@ -14,6 +16,7 @@ using Presentation_Layer.ViewModels.Employees;
 namespace Presentation_Layer.Controllers.Employees
 {
     [Route("Employees/[controller]/ [action]")]
+    [Authorize]
     public class EmployeeController : Controller
     {
         #region Services
@@ -36,9 +39,9 @@ namespace Presentation_Layer.Controllers.Employees
 
         #region Index Action
         [HttpGet]
-        public IActionResult Index(string SearchValue)
+        public async Task< IActionResult> Index(string SearchValue)
         {
-            var Employees = _employeeServices.GetAllEmployees(SearchValue);
+            var Employees = await _employeeServices.GetAllEmployeesAsync(SearchValue).ConfigureAwait(false);
 
             return View(Employees);
         }
@@ -56,7 +59,7 @@ namespace Presentation_Layer.Controllers.Employees
 
         [HttpPost]
         [ValidateAntiForgeryToken]//Action Filter
-        public IActionResult Create(EmployeeViewModel employeeVM)
+        public async Task< IActionResult> Create(EmployeeViewModel employeeVM)
         {
             if (!ModelState.IsValid)
                 return View(employeeVM);
@@ -65,7 +68,7 @@ namespace Presentation_Layer.Controllers.Employees
             {
                 // EmployeeViewModel => CreateEmployeeDto
                 var EmployeeCreated =_mapper.Map<CreatedEmployeeDto>(employeeVM);
-                var Result = _employeeServices.AddEmployee(EmployeeCreated);
+                var Result =await _employeeServices.AddEmployeeAsync(EmployeeCreated).ConfigureAwait(false);
                 //    new CreatedEmployeeDto()
                 //    {
                     
@@ -114,11 +117,11 @@ namespace Presentation_Layer.Controllers.Employees
 
         #region Detalis Action
         [HttpGet]
-        public IActionResult Details(int? id)
+        public async Task< IActionResult> Details(int? id)
         {
             if (id == null)
                 return BadRequest();
-            var Employee = _employeeServices.GetEmployeeById(id.Value);
+            var Employee =await _employeeServices.GetEmployeeByIdAsync(id.Value).ConfigureAwait(false);
             if (Employee == null)
                 return NotFound();
 
@@ -128,12 +131,12 @@ namespace Presentation_Layer.Controllers.Employees
 
         #region Edit Action
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task< IActionResult> Edit(int? id)
         {
             if (id == null )
                 return BadRequest("Invalid employee ID.");
 
-            var employee = _employeeServices.GetEmployeeById(id.Value);
+            var employee =await _employeeServices.GetEmployeeByIdAsync(id.Value).ConfigureAwait(false);
             if (employee == null)
                 return NotFound("Employee not found.");
 
@@ -147,7 +150,7 @@ namespace Presentation_Layer.Controllers.Employees
 
         [HttpPost]
         [ValidateAntiForgeryToken] // Action Filter
-        public IActionResult Edit(int id, EmployeeViewModel employeeVM)
+        public async Task< IActionResult> Edit(int id, EmployeeViewModel employeeVM)
         {
             if (!ModelState.IsValid)
                 return View(employeeVM);
@@ -157,7 +160,7 @@ namespace Presentation_Layer.Controllers.Employees
                 //EmployeeViewModel => UpdateEmployeeDto
             var EmployeeToUpdate= _mapper.Map<UpdateEmployeeDto>(employeeVM);              
                 EmployeeToUpdate.Id = id;
-                var result = _employeeServices.UpdateEmployee(EmployeeToUpdate);
+                var result =await _employeeServices.UpdateEmployeeAsync(EmployeeToUpdate).ConfigureAwait(false);
                 if (result > 0)
                     return RedirectToAction(nameof(Index));
 
@@ -177,11 +180,11 @@ namespace Presentation_Layer.Controllers.Employees
 
         #region Delete Action
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task< IActionResult> Delete(int? id)
         {
             if (id is null)
                 return BadRequest();
-            var Employee = _employeeServices.GetEmployeeById(id.Value);
+            var Employee =await _employeeServices.GetEmployeeByIdAsync(id.Value).ConfigureAwait(false);
             if (Employee == null)
                 return NotFound();
             return View(Employee);
@@ -190,9 +193,9 @@ namespace Presentation_Layer.Controllers.Employees
         [HttpPost]
         [ValidateAntiForgeryToken]//Action Filter
 
-        public IActionResult Delete(int id)
+        public async Task< IActionResult> Delete(int id)
         {
-            var Result = _employeeServices.DeleteEmployee(id);
+            var Result = await _employeeServices.DeleteEmployeeAsync(id).ConfigureAwait(false);
             var message = string.Empty;
             try
             {

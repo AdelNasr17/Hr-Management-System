@@ -15,7 +15,8 @@ namespace Presentation_Layer.Mapping
                 .ForMember(dest => dest.Gender, opt => opt.MapFrom(Src => Src.Gender.ToString()))
                 .ForMember(dest => dest.EmployeeType, opt => opt.MapFrom(Src => Src.EmployeeType.ToString()))
                 .ForMember(dest => dest.DepartmentID, opt => opt.MapFrom(Src => Src.DepartmentID))
-                .ForMember(dest => dest.ImageURL, config => config.MapFrom(src => src.ImageURL));
+                .ForMember(dest => dest.Image, config => config.MapFrom(src => src.Image));
+
 
             CreateMap<EmployeeDetailsToReturnDto, EmployeeViewModel>()
                 .ForMember(dest => dest.Gender, opt => opt.MapFrom(Src => Src.Gender.ToString()))
@@ -26,7 +27,7 @@ namespace Presentation_Layer.Mapping
                 .ForMember(dest => dest.Gender, opt => opt.MapFrom(Src => Src.Gender.ToString()))
                 .ForMember(dest => dest.EmployeeType, opt => opt.MapFrom(Src => Src.EmployeeType.ToString()))
                 .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(Src => Src.DepartmentID))
-                .ForMember(dest => dest.ImageURL, config => config.MapFrom(src => src.ImageURL));
+                .ForMember(dest => dest.Image, config => config.MapFrom(src => src.Image));
 
 
             #endregion

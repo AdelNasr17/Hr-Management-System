@@ -6,3 +6,8 @@ global using DataAccess.Models.Employee;
 global using DataAccess.Models.Shared.Enums;
 global using System.ComponentModel.DataAnnotations;
 global using Microsoft.EntityFrameworkCore;
+global using Microsoft.AspNetCore.Http;
+global using AutoMapper;
+global using AutoMapper.QueryableExtensions;
+global using DataAccess.UnitOfWork;
+global using Bussiness_Layer.Comman.Services.AttachmentServices;

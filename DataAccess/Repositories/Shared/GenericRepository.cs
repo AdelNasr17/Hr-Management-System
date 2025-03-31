@@ -10,14 +10,10 @@ namespace DataAccess.Repositories.Shared
             
         }
 
-        public IEnumerable<T> GetAll() => dbContext.Set<T>().Where(E=> E.IsDeleted==false).ToList();
+        public async Task<IEnumerable<T>> GetAllAsync() => await dbContext.Set<T>().Where(E=> E.IsDeleted==false).ToListAsync().ConfigureAwait(false);
 
-       
-
-        public T? GetById(int id) => dbContext.Set<T>().Find(id);
-
+        public async Task<T?> GetByIdAsync(int id) => await dbContext.Set<T>().FindAsync(id).ConfigureAwait(false);
      
-
         public void Remove(T Entity)
         {
             //dbContext.Set<T>().Remove(Entity);
@@ -37,5 +33,6 @@ namespace DataAccess.Repositories.Shared
         {
             return dbContext.Set<T>();
         }
+
     }
 }

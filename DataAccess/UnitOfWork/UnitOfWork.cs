@@ -1,11 +1,4 @@
-﻿using DataAccess.Repositories.DepartmentRepository;
-using DataAccess.Repositories.EmployeeRepository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace DataAccess.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
@@ -23,15 +16,17 @@ namespace DataAccess.UnitOfWork
 
        
 
-        int IUnitOfWork.Complete()
+         public async Task<int> CompleteAsync()
         {
-            return _dbContext.SaveChanges();
+            return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
            
         }
 
-        public void Dispose()
+        
+
+        public async ValueTask DisposeAsync()
         {
-            _dbContext.Dispose();
+           await _dbContext.DisposeAsync().ConfigureAwait(false);
         }
     }
 }

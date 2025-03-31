@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Bussiness_Layer.Data_Transfer_Object.Department;
 using Bussiness_Layer.Services.DepartmentService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Presentation_Layer.ViewModels.Departments;
 
 namespace Presentation_Layer.Controllers.Departments
- { 
+ {
+    [Authorize]
     public class DepartmentController : Controller
     {
         #region Services
@@ -26,22 +28,24 @@ namespace Presentation_Layer.Controllers.Departments
         #endregion
 
         #region Index Action
-        //VioewStorage ==> ViewDate , ViewBag ==> deal With She Same Storage
-        //Dictonary 
-        //Extra Data
-        //1) Send Data From Action In Controller To View 
-        //2) Send Data From view To Partial View 
-        //3) Send Data From view To Partial Layout 
-        
+        ///VioewStorage ==> ViewDate , ViewBag ==> deal With She Same Storage
+        ///Dictonary 
+        ///Extra Data
+        ///1) Send Data From Action In Controller To View 
+        ///2) Send Data From view To Partial View 
+        ///3) Send Data From view To Partial Layout 
+         
+        ///View Data => .Net 3.5
+        ///View Bag => >Net 4.0
+         
+        ///TempData ==> Send Data from Request To Anther Request [From Action To Anther Action ]
+        ///
 
-        //View Data => .Net 3.5
-        //View Bag => >Net 4.0
 
-        //TempData ==> Send Data from Request To Anther Request [From Action To Anther Action ]
         [HttpGet]
-        public IActionResult Index()
+        public async Task< IActionResult> Index()
         {
-            var departments = _departmentServices.GetAllDepartments();
+            var departments = await _departmentServices.GetAllDepartmentsAsync().ConfigureAwait(false);
 
             return View(departments);
         }
@@ -56,7 +60,7 @@ namespace Presentation_Layer.Controllers.Departments
         [HttpPost]
         [ValidateAntiForgeryToken]//Action Filter
 
-        public IActionResult Create(DepartmentViewModel departmentVM)
+        public async Task< IActionResult> Create(DepartmentViewModel departmentVM)
         {
             if (!ModelState.IsValid)
                 return View(departmentVM);
@@ -66,7 +70,7 @@ namespace Presentation_Layer.Controllers.Departments
                     ////Map DepartmentViewModel to CreatedDepartmentDto
                     var DepartmentToCreated=_mapper.Map<DepartmentViewModel,CreatedDepartmentDto>(departmentVM);
 
-                var Result = _departmentServices.AddDepartment(DepartmentToCreated);
+                var Result = await _departmentServices.AddDepartmentAsync(DepartmentToCreated).ConfigureAwait(false);
                 if (Result > 0)
                 {
                     TempData["Message"] = "Department Is Created";
@@ -103,11 +107,11 @@ namespace Presentation_Layer.Controllers.Departments
 
         #region Details Action
         [HttpGet]
-        public IActionResult Details(int? id)
+        public async Task< IActionResult> Details(int? id)
         {
             if (id == null)
                 return BadRequest();
-            var department = _departmentServices.GetDepartmentById(id.Value);
+            var department = await _departmentServices.GetDepartmentByIdAsync(id.Value).ConfigureAwait(false);
             if (department == null)
                 return NotFound();
 
@@ -117,11 +121,11 @@ namespace Presentation_Layer.Controllers.Departments
 
         #region Edit Action
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task< IActionResult> Edit(int? id)
         {
             if (id == null)
                 return BadRequest();
-            var department = _departmentServices.GetDepartmentById(id.Value);
+            var department = await _departmentServices.GetDepartmentByIdAsync(id.Value).ConfigureAwait(false);
             if (department == null)
                 return NotFound();
             ////Map   DepartmentDetailsToReturnDto to DepartmentViewModel
@@ -134,7 +138,7 @@ namespace Presentation_Layer.Controllers.Departments
         [HttpPost]
         [ValidateAntiForgeryToken]//Action Filter
 
-        public IActionResult Edit(int id, DepartmentViewModel departmendVM)
+        public async Task< IActionResult> Edit(int id, DepartmentViewModel departmendVM)
         {
             if (!ModelState.IsValid)
                 return View(departmendVM);
@@ -143,7 +147,7 @@ namespace Presentation_Layer.Controllers.Departments
             {
                 var departmentToUpdate = _mapper.Map<UpdateDepartmentDto>(departmendVM);
                 departmentToUpdate.Id = id;
-                var Result = _departmentServices.UpdateDepartment(departmentToUpdate);
+                var Result = await _departmentServices.UpdateDepartmentAsync(departmentToUpdate).ConfigureAwait(false);
                 if (Result > 0)
                     return RedirectToAction(nameof(Index));
                 else
@@ -164,11 +168,11 @@ namespace Presentation_Layer.Controllers.Departments
 
         #region Delete Action
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task< IActionResult> Delete(int? id)
         {
             if (id is null)
                 return BadRequest();
-            var department = _departmentServices.GetDepartmentById(id.Value);
+            var department = await _departmentServices.GetDepartmentByIdAsync(id.Value).ConfigureAwait(false);
             if (department == null)
                 return NotFound();
             return View(department);
@@ -177,9 +181,9 @@ namespace Presentation_Layer.Controllers.Departments
         [HttpPost]
         [ValidateAntiForgeryToken]//Action Filter
 
-        public IActionResult Delete(int id)
+        public async Task< IActionResult> Delete(int id)
         {
-            var Result = _departmentServices.DeleteDepartment(id);
+            var Result = await _departmentServices.DeleteDepartmentAsync(id).ConfigureAwait(false);
             var message = string.Empty;
             try
             {

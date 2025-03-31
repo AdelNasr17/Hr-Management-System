@@ -4,10 +4,10 @@ namespace Bussiness_Layer.Services.DepartmentService
 {
     public interface IDepartmentService
     {
-        public int AddDepartment(CreatedDepartmentDto departmentDto);
-        public IEnumerable<DepartmentToReturnDto> GetAllDepartments();
-        public DepartmentDetailsToReturnDto? GetDepartmentById(int id);
-        public bool DeleteDepartment(int id);
-        public int UpdateDepartment(UpdateDepartmentDto departmentDto);
+        public Task< int> AddDepartmentAsync(CreatedDepartmentDto departmentDto);
+        public Task< IEnumerable<DepartmentToReturnDto>> GetAllDepartmentsAsync();
+        public Task< DepartmentDetailsToReturnDto?> GetDepartmentByIdAsync(int id);
+        public Task< bool> DeleteDepartmentAsync(int id);
+        public Task< int> UpdateDepartmentAsync(UpdateDepartmentDto departmentDto);
     }
 }
