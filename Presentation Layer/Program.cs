@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using DataAccess.Models.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Bussiness_Layer.Services.EmailService;
 
 
 namespace Presentation_Layer
@@ -79,6 +80,11 @@ namespace Presentation_Layer
 
                 }
                 );
+
+
+
+            //SendEmail
+            builder.Services.AddScoped<IEmailService,EmailService>();
             #endregion
 
 

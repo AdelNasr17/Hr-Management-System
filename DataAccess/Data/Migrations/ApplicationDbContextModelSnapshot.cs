@@ -65,7 +65,7 @@ namespace DataAccess.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("DataAccess.Models.Employee.Employee", b =>
@@ -138,7 +138,7 @@ namespace DataAccess.Data.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("DataAccess.Models.Identity.ApplicationUser", b =>
