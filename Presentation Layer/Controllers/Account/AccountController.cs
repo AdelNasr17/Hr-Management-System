@@ -2,6 +2,7 @@
 using DataAccess.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using Presentation_Layer.ViewModels.Identity;
 
 namespace Presentation_Layer.Controllers.Account
@@ -115,7 +116,7 @@ namespace Presentation_Layer.Controllers.Account
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendResetPasswordUrl(ForgetPasswordViewModel forgetPasswordViewModel)
+        public async Task<IActionResult> ForgetPassword(ForgetPasswordViewModel forgetPasswordViewModel)
         {
             if(ModelState.IsValid)
             {
@@ -136,7 +137,7 @@ namespace Presentation_Layer.Controllers.Account
                     };
 
                     //Send Email
-                    _emailService.SendEmail(email);
+                     _emailService.SendEmail(email);
                     return RedirectToAction("CheckYourIndex");
                 }
                 else
@@ -179,10 +180,13 @@ namespace Presentation_Layer.Controllers.Account
                     {
                         return RedirectToAction(nameof(Login));
                     }
-
+                    foreach(var error in Result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
                 }
             }
-            ModelState.AddModelError(string.Empty, "Invalid Operation P;ease Try again");
+           
             return View (resendPasswordViewModel);
 
         }

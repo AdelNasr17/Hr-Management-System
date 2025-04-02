@@ -142,9 +142,9 @@ namespace Presentation_Layer.Controllers.Employees
 
 
             //EmployeeDetailsToReturnDto=> EmployeViewModel
-            var updateEmployeeDto = _mapper.Map<EmployeeViewModel>(employee);
+            var updateEmployeeVM= _mapper.Map<EmployeeViewModel>(employee);
 
-            return View(updateEmployeeDto);
+            return View(updateEmployeeVM);
         }
 
 

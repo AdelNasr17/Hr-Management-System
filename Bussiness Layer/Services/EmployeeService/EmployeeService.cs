@@ -78,7 +78,7 @@ namespace Bussiness_Layer.Services.EmployeeService
             var employee = _mapper.Map<Employee>(EmployeeDto);
 
             _unitOfWork.employeeRepository.Update(employee);
-            return await _unitOfWork.CompleteAsync().ConfigureAwait(false);
+            return await _unitOfWork.CompleteAsync();
         }
 
         #endregion

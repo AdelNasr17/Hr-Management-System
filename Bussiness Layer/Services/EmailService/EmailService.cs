@@ -12,16 +12,18 @@ namespace Bussiness_Layer.Services.EmailService
     public class EmailService : IEmailService
     {
 
-        void IEmailService.SendEmail(Email email)
+          public void SendEmail(Email email)
         {
-            using (var Client = new SmtpClient("smtp.gmail.com", 587))
-            {
-                Client.EnableSsl = true;
 
-                Client.Credentials = new NetworkCredential("adelnasrroute@gmail.com", "fbbohcmeoerznujd");
-                Client.Send("adelnasrroute@gmail.com", email.To, email.Subject, email.Body);
-            }
-         
+            var Client = new SmtpClient("smtp.gmail.com", 587);
+
+            Client.EnableSsl = true;
+
+            Client.Credentials = new NetworkCredential("adelnasrroute@gmail.com", "fbbohcmeoerznujd");
+            Client.Send("adelnasrroute@gmail.com", email.To, email.Subject, email.Body);
+
         }
+
+
     }
 }

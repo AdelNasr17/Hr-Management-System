@@ -12,7 +12,7 @@ namespace DataAccess.Repositories.Shared
 
         public async Task<IEnumerable<T>> GetAllAsync() => await dbContext.Set<T>().Where(E=> E.IsDeleted==false).ToListAsync().ConfigureAwait(false);
 
-        public async Task<T?> GetByIdAsync(int id) => await dbContext.Set<T>().FindAsync(id).ConfigureAwait(false);
+        public async Task<T?> GetByIdAsync(int id) => await dbContext.Set<T>().AsNoTracking().FirstOrDefaultAsync( e=> e.Id==id);
      
         public void Remove(T Entity)
         {
