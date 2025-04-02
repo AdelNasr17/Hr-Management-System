@@ -1,18 +1,18 @@
-﻿@model IEnumerable<EmployeeToReturnDto>
+﻿@model IEnumerable<UserViewModel>
 @{
-    ViewData["Title"] = "Employees";
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-primary fw-bold">All Employees</h1>
-        <a class="btn btn-lg btn-primary shadow-sm" asp-controller="Employee" asp-action="Create">+ Create Employee</a>
+        <h1 class="text-primary fw-bold">All Users</h1>
     </div>
 
     <div class="card p-4 shadow-sm mb-4">
         <form class="row g-3" asp-action="Index" method="get">
             <div class="col-md-8">
-                <input type="text" name="SearchValue" class="form-control" placeholder="Search by Employee Name" />
+                <input type="text" name="SearchValue" class="form-control" placeholder="Search by User email" />
             </div>
             <div class="col-md-4 text-end">
                 <button type="submit" class="btn btn-outline-primary">Search</button>
@@ -26,55 +26,44 @@
             <table class="table table-hover text-center align-middle">
                 <thead class="table-dark">
                     <tr>
-                        <th>Image</th>
-                        <th>@Html.DisplayNameFor(E => E.Name)</th>
-                        <th>@Html.DisplayNameFor(E => E.Email)</th>
-                        <th>@Html.DisplayNameFor(E => E.EmployeeType)</th>
-                        <th>@Html.DisplayNameFor(E => E.Age)</th>
-                        <th>@Html.DisplayNameFor(E => E.Salary)</th>
-                        <th>@Html.DisplayNameFor(E => E.Department)</th>
-                        <th>@Html.DisplayNameFor(E => E.IsActive)</th>
-                        <th>@Html.DisplayNameFor(E => E.Gender)</th>
+                        
+                        <th>@Html.DisplayNameFor(U => U.Id)</th>
+                        <th>@Html.DisplayNameFor(U => U.FName)</th>
+                        <th>@Html.DisplayNameFor(U => U.LName)</th>
+                        <th>@Html.DisplayNameFor(U => U.Email)</th>
+                        <th>@Html.DisplayNameFor(U => U.Roles)</th>
+                      
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var employee in Model)
+                    @foreach (var user in Model)
                     {
                         <tr>
+                           
+                            <td>@Html.DisplayFor(U => user.Id)</td>
+                            <td>@Html.DisplayFor(U => user.FName)</td>
+                            <td>@Html.DisplayFor(U => user.LName)</td>
                             <td>
-                                <img src="~/files/Images/@(employee.ImageURL ?? "NotFound.png")" class="rounded-circle border" width="40" height="40" alt="Employee Image" />
+                                <a href="mailto:@user.Email" class="text-decoration-none">@Html.DisplayFor(U=> user.Email)</a>
                             </td>
-                            <td>@Html.DisplayFor(E => employee.Name)</td>
-                            <td>
-                                <a href="mailto:@employee.Email" class="text-decoration-none">@Html.DisplayFor(E => employee.Email)</a>
-                            </td>
-                            <td>@Html.DisplayFor(E => employee.EmployeeType)</td>
-                            <td>@Html.DisplayFor(E => employee.Age)</td>
-                            <td>@Html.DisplayFor(E => employee.Salary)</td>
-                            <td>@Html.DisplayFor(E => employee.Department)</td>
-                            <td>
-                                <span class="badge @(employee.IsActive ? "bg-success" : "bg-secondary")">
-                                    @(employee.IsActive ? "Active" : "Inactive")
-                                </span>
-                            </td>
-                            <td>@Html.DisplayFor(E => employee.Gender)</td>
-                            <partial name="_ButtonsPartial" model="@employee.Id.ToString()" />
-                        </tr>
+                            <td>@string.Join(",",user.Roles)</td>
+                            <partial name="_ButtonsPartial" model="@user.Id.ToString()" />                                                                             
+                       </tr>
 
                         <!-- Delete Modal -->
-                        <div class="modal fade" id="deleteModal-@employee.Id" tabindex="-1" aria-labelledby="deleteModalLabel-@employee.Id" aria-hidden="true">
+                        <div class="modal fade" id="deleteModal-@user.Id" tabindex="-1" aria-labelledby="deleteModalLabel-@user.Id" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title text-danger" id="deleteModalLabel-@employee.Id">Delete Employee</h5>
+                                        <h5 class="modal-title text-danger" id="deleteModalLabel-@user.Id">Delete User</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        Are you sure you want to delete <strong>@employee.Name</strong>?
+                                        Are you sure you want to delete <strong>@user.FName</strong>?
                                     </div>
                                     <div class="modal-footer">
-                                        <form asp-controller="Employee" asp-action="Delete" asp-route-id="@employee.Id">
+                                        <form asp-controller="User" asp-action="ConfirmDelete" asp-route-id="@user.Id">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                             <button type="submit" class="btn btn-danger">Delete</button>
                                         </form>
@@ -90,7 +79,7 @@
     else
     {
         <div class="alert alert-info text-center mt-4">
-            <h4>No Employees Found!</h4>
+            <h4>No Users Found!</h4>
         </div>
     }
 </div>
