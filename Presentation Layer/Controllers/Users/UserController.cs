@@ -1,5 +1,6 @@
 ﻿using Bussiness_Layer.Data_Transfer_Object.Employee;
 using DataAccess.Models.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,8 @@ using Presentation_Layer.ViewModels.Users;
 
 namespace Presentation_Layer.Controllers.Users
 {
+    //[Authorize(Roles ="Admin")]
+
     public class UserController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
